@@ -13,6 +13,7 @@ public class ObjectMessageContainer {
     private String roomId;
     private String from;
     private String to;
+    private MessageType type;
     private String messageId;
 
     private Object message; // 메시지에 any message 객체가 들어갈 수 있기에 Object type
