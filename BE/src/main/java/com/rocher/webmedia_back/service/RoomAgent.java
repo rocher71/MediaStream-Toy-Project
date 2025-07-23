@@ -56,6 +56,8 @@ public class RoomAgent {
                 handleUserJoined(session, messageId, message);
             } else if(MessageType.UserPublishedChangeReport.equals(type)){
                 final UserPublishedChangeReport message = objectMapper.readValue(messageStr, UserPublishedChangeReport.class);
+
+                handleUserPublishedChangeReport(session, messageId, message);
             } else {
                 final ErrorResponseMessage response = ErrorResponseMessage.builder()
                         .errorCode(ErrorCode.BadRequest)
@@ -113,6 +115,24 @@ public class RoomAgent {
                     .build();
 
             messageSender.sendEventMessage(anotherUser.getSession(), roomId, MessageType.UserJoinedEvent, eventMessage);
+        }
+    }
+
+    private void handleUserPublishedChangeReport(WebSocketSession session, String messageId, UserPublishedChangeReport message) throws Exception {
+        final RoomUser user = roomUserMap.get(session.getId());
+
+        if((user != null) && (user.isPublished())){
+            user.setPublished(message.isPublished());
+
+            final RoomUser anotherUser = getAnotherUser(user);
+            if(anotherUser != null){
+                final UserStateChangedEventMessage eventMessage = UserStateChangedEventMessage.builder()
+                        .userId(user.getUserId())
+                        .published(message.isPublished())
+                        .build();
+
+                messageSender.sendEventMessage(anotherUser.getSession(), roomId, MessageType.UserStateChangedEvent, eventMessage);
+            }
         }
     }
 
