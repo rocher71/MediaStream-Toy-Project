@@ -40,6 +40,18 @@ public class WebMediaHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception{
         log.debug("Connection closed : sessionId={}, status={}", session.getId(), status);
+
+        synchronized (lockObj){
+            for(RoomAgent agent : agentMap.values()){
+                agent.handleUserLeft(session);
+
+                if(agent.getUserCount() == 0){
+                    agentMap.remove(agent.getRoomId());
+
+                    log.debug("Room destroyed : roomId={}", agent.getRoomId());
+                }
+            }
+        }
     }
 
     @Override

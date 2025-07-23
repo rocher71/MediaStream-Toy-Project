@@ -45,7 +45,21 @@ public class RoomAgent {
     }
 
     public void handleUserLeft(WebSocketSession session)throws Exception{
+        synchronized (lockObj){
+            final RoomUser user = roomUserMap.get(session.getId());
+            if(user != null){
+                roomUserMap.remove(session.getId());
 
+                final RoomUser anotherUser = this.getAnotherUser(user);
+                if(anotherUser != null){
+                    final UserLeftEventMessage eventMessage = UserLeftEventMessage.builder()
+                            .userId(user.getUserId())
+                            .build();
+
+                    messageSender.sendEventMessage(anotherUser.getSession(), roomId, MessageType.UserLeftEvent, eventMessage);
+                }
+            }
+        }
     }
 
     public void handleMessage(WebSocketSession session, String messageId, MessageType type, String messageStr) throws Exception {
