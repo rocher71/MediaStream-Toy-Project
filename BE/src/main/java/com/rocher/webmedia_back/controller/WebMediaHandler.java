@@ -21,4 +21,8 @@ public class WebMediaHandler extends TextWebSocketHandler {
         log.debug("Connection closed : sessionId={}, status={}", session.getId(), status);
     }
 
+    @Override
+    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+
+    }
 }
