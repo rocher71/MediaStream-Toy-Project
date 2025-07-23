@@ -17,7 +17,7 @@ public class StringMessageContainer {
     private String from;
     private String to;
     private String messageId;
-
+    private MessageType type;
     // application protocol의 body
     // 실제 받고자 하는 데이터(메시지)
     @JsonDeserialize(using = JsonStringMessageDeserializer.class)
